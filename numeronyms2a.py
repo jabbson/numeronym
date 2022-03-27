@@ -1,5 +1,8 @@
 # Write a function that can determine if a word is a numeronym and it is unique.
 
+from typing import List
+from unittest import mock
+from unittest.mock import mock_open
 import pytest
 
 
@@ -13,7 +16,6 @@ class NoNumeronym(Exception):
 
 class NoWord(Exception):
     pass
-
 
 def check_num(num: str, word: str) -> bool:
     num = num.lower()
@@ -55,7 +57,10 @@ def check_num(num: str, word: str) -> bool:
     return True
 
 
-def check_num_list(num: str, word: str, lst: list) -> bool:
+def check_num_list(num: str, word: str) -> bool:
+
+    lst = get_data('/usr/share/dict/words')
+
     if not check_num(num, word):
         return False
 
@@ -79,41 +84,44 @@ def check_num_list(num: str, word: str, lst: list) -> bool:
 
     return True
 
+data = '''azoisobutyronitrile
+katharometer
+kotharometer'''
 
-@pytest.fixture
-def data():
-    with open('/usr/share/dict/words') as f:
-        return f.read().split('\n')
+mopen = mock_open(read_data=data)
+
+def get_data(filename: str) -> List[str]:
+    with mock.patch('builtins.open', mopen):
+        with open(filename) as f:
+            return f.read().split('\n')
 
 
 @pytest.mark.parametrize(
-    "in1, in2, lst, out",
+    "in1, in2, out",
     [
         # Everything works!
-        ('a17e', 'azoisobutyronitrile', 'data', True),
+        ('a17e', 'azoisobutyronitrile', True),
         # Duplicate name in inputs!
-        ('k10r', 'katharometer',        'data', False),
+        ('k10r', 'katharometer',        False),
         # Name isn't in the list!
-        ('q10g', 'qwertyasdfzg',        'data', False),
+        ('q10g', 'qwertyasdfzg',        False),
     ]
 )
-def test_check_num2(in1, in2, lst, out, request):
-    lst = request.getfixturevalue(lst)
-    assert check_num_list(in1, in2, lst) == out
+def test_check_num2(in1, in2, out):
+    assert check_num_list(in1, in2) == out
 
 
 @pytest.mark.parametrize(
-    "in1, in2, lst, exp",
+    "in1, in2, exp",
     [
-        ('k9',  'kubernetes', 'data', pytest.raises(InvalidNumeronym)),
-        ('',    'kubernetes', 'data', pytest.raises(NoNumeronym)),
-        ('k8s', '',           'data', pytest.raises(NoWord)),
+        ('k9',  'kubernetes', pytest.raises(InvalidNumeronym)),
+        ('',    'kubernetes', pytest.raises(NoNumeronym)),
+        ('k8s', '',           pytest.raises(NoWord)),
     ]
 )
-def test_check_num2_throws(in1, in2, lst, exp, request):
-    lst = request.getfixturevalue(lst)
+def test_check_num2_throws(in1, in2, exp):
     with exp:
-        assert check_num_list(in1, in2, lst) is not None
+        assert check_num_list(in1, in2) is not None
 
 
 if __name__ == "__main__":
