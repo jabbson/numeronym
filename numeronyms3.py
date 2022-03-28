@@ -21,22 +21,6 @@ def check_num(num: str, word: str) -> bool:
     num = num.lower()
     word = word.lower()
 
-    # no numeronym
-    if len(num) == 0:
-        raise NoNumeronym
-
-    # empty word
-    if len(word) == 0:
-        raise NoWord
-
-    # two letter words
-    if len(num) == 2 and num == word:
-        raise True
-
-    # number in the word
-    if any(x.isnumeric() for x in word):
-        raise InvalidNumeronym
-
     word_pointer = 0
 
     # 'c12u2r22' --> ['c', '12', 'u', '2', 'r', '22']
@@ -67,8 +51,21 @@ def check_num_list(num: str, word: str) -> bool:
 
     lst = get_data('/usr/share/dict/words')
 
-    if not check_num(num, word):
-        return False
+    # no numeronym
+    if len(num) == 0:
+        raise NoNumeronym
+
+    # empty word
+    if len(word) == 0:
+        raise NoWord
+
+    # number in the word
+    if any(x.isnumeric() for x in word):
+        raise InvalidNumeronym
+
+    # two letter words
+    if len(num) == 2 and num == word:
+        raise True
 
     # empty list
     if not lst:
@@ -76,6 +73,9 @@ def check_num_list(num: str, word: str) -> bool:
 
     # no work in the list
     if word not in lst:
+        return False
+
+    if not check_num(num, word):
         return False
 
     # iter list

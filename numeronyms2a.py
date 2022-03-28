@@ -21,26 +21,6 @@ def check_num(num: str, word: str) -> bool:
     num = num.lower()
     word = word.lower()
 
-    # no numeronym
-    if len(num) == 0:
-        raise NoNumeronym
-
-    # numeronym is too short
-    if len(num) == 1:
-        raise InvalidNumeronym
-
-    # numeronym starts or ends with a number
-    if num[0].isnumeric() or num[-1].isnumeric():
-        raise InvalidNumeronym
-
-    # empty word
-    if len(word) == 0:
-        raise NoWord
-
-    # two letter words
-    if len(num) == 2 and num == word:
-        raise True
-
     # first and last letters must match
     if num[0] != word[0] or num[-1] != word[-1]:
         return False
@@ -61,8 +41,25 @@ def check_num_list(num: str, word: str) -> bool:
 
     lst = get_data('/usr/share/dict/words')
 
-    if not check_num(num, word):
-        return False
+    # no numeronym
+    if len(num) == 0:
+        raise NoNumeronym
+
+    # numeronym is too short
+    if len(num) == 1:
+        raise InvalidNumeronym
+
+    # numeronym starts or ends with a number
+    if num[0].isnumeric() or num[-1].isnumeric():
+        raise InvalidNumeronym
+
+    # empty word
+    if len(word) == 0:
+        raise NoWord
+
+    # two letter words
+    if len(num) == 2 and num == word:
+        raise True
 
     # empty list
     if not lst:
@@ -70,6 +67,9 @@ def check_num_list(num: str, word: str) -> bool:
 
     # no work in the list
     if word not in lst:
+        return False
+
+    if not check_num(num, word):
         return False
 
     # iter list
