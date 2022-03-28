@@ -19,6 +19,24 @@ def check_num(num: str, word: str) -> bool:
     num = num.lower()
     word = word.lower()
 
+    # first and last letters must match
+    if num[0] != word[0] or num[-1] != word[-1]:
+        return False
+
+    try:
+        n = int(num[1:-1])
+    except:
+        raise InvalidNumeronym
+
+    # num != letter count in the word
+    if len(word[1:-1]) != n:
+        return False
+
+    return True
+
+
+def check_num_list(num: str, word: str, lst: list) -> bool:
+
     # no numeronym
     if len(num) == 0:
         raise NoNumeronym
@@ -39,32 +57,15 @@ def check_num(num: str, word: str) -> bool:
     if len(num) == 2 and num == word:
         raise True
 
-    # first and last letters must match
-    if num[0] != word[0] or num[-1] != word[-1]:
-        return False
-
-    try:
-        n = int(num[1:-1])
-    except:
-        raise InvalidNumeronym
-
-    # num != letter count in the word
-    if len(word[1:-1]) != n:
-        return False
-
-    return True
-
-
-def check_num_list(num: str, word: str, lst: list) -> bool:
-    if not check_num(num, word):
-        return False
-
     # empty list
     if not lst:
         return False
 
     # no work in the list
     if word not in lst:
+        return False
+
+    if not check_num(num, word):
         return False
 
     # iter list
