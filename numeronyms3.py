@@ -144,26 +144,4 @@ def test_check_num2_throws(in1, in2, exp):
 
 
 if __name__ == "__main__":
-    # print(check_num2('a17e', 'azoisobutyronitrile', ['azoisobutyronitrile',  'cats', 'dogs']))
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    print(check_num())
-    # print(check_num('', 'computer'))
-    # print(check_num('c3u2r', ''))
-
-    # '7',    'computer' FALSE
-    # '8',    'computer' TRUE
-    # '9',    'computer' FALSE
-
-    # '4u3',  'computer' TRUE
-    # '3u4',  'computer' FALSE
-    # '4u4',  'computer' FALSE
-
-    # 'c3u2r, 'computer' TRUE
-
-
+    pass
