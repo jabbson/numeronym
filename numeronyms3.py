@@ -6,7 +6,12 @@ from unittest.mock import mock_open
 import pytest
 from itertools import groupby
 
+
 class InvalidNumeronym(Exception):
+    pass
+
+
+class InvalidWord(Exception):
     pass
 
 
@@ -16,6 +21,7 @@ class NoNumeronym(Exception):
 
 class NoWord(Exception):
     pass
+
 
 def check_num(num: str, word: str) -> bool:
     num = num.lower()
@@ -60,7 +66,10 @@ def check_num_list(num: str, word: str) -> bool:
         raise NoWord
 
     # number in the word
-    if any(x.isnumeric() for x in word):
+    if any(not x.isalpha() for x in word):
+        raise InvalidWord
+
+    if any(not x.isalpha() and not x.isnumeric() for x in num):
         raise InvalidNumeronym
 
     # two letter words
@@ -91,6 +100,7 @@ def check_num_list(num: str, word: str) -> bool:
 
     return True
 
+
 data = '''azoisobutyronitrile
 o
 computer
@@ -98,6 +108,7 @@ katharometer
 kotharometer'''
 
 mopen = mock_open(read_data=data)
+
 
 def get_data(filename: str) -> List[str]:
     with mock.patch('builtins.open', mopen):
@@ -133,9 +144,10 @@ def test_check_num2(in1, in2, out):
 @pytest.mark.parametrize(
     "in1, in2, exp",
     [
-        ('',    'kubernetes', pytest.raises(NoNumeronym)),
-        ('k8s', '',           pytest.raises(NoWord)),
-
+        ('',    'kubernetes',  pytest.raises(NoNumeronym)),
+        ('k8s', '',            pytest.raises(NoWord)),
+        ('k8s.', 'kubernetes', pytest.raises(InvalidNumeronym)),
+        ('k8s', 'kubernetes.', pytest.raises(InvalidWord)),
     ]
 )
 def test_check_num2_throws(in1, in2, exp):
